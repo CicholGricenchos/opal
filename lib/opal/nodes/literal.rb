@@ -221,7 +221,10 @@ module Opal
           case child.type
           when :str
             value = child.loc.expression.source
-            value = value.gsub(/;\s*$/, '') if last_index == index
+            if last_index == index && value.match(/;\s*$/)
+              compiler.warning 'Xstr ends with semicolon', child.line
+              value = value.gsub(/;\s*$/, '')
+            end
             push Fragment.new(value, nil)
           when :begin
             push expr(child)
